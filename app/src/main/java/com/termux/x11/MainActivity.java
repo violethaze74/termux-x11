@@ -47,8 +47,6 @@ public class MainActivity extends AppCompatActivity {
         kbd = findViewById(R.id.additionalKbd);
 	frm = findViewById(R.id.frame);
 
-	kbd.setExtraKeysViewClient(new TerminalExtraKeys(LorieService.getOnKeyListener(), this));
-
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N)
             getWindow().
              getDecorView().
@@ -82,6 +80,8 @@ public class MainActivity extends AppCompatActivity {
 
         instance.setListeners(lorieView);
 	kbd.reload(mProperties.getExtraKeysInfo());
+	kbd.setExtraKeysViewClient(new TerminalExtraKeys(LorieService.getOnKeyListener(), this));
+
     }
 
     @Override
@@ -122,13 +122,8 @@ public class MainActivity extends AppCompatActivity {
 	    return;
 	} else {
 	    if (kbd.getVisibility() != View.VISIBLE)
-		if (preferences.getBoolean("showAdditionalKbd", true)) {
-                    kbd.setVisibility(View.VISIBLE);
-		    int paddingDp = 35;
-		    float density = this.getResources().getDisplayMetrics().density;
-		    int paddingPixel = (int)(paddingDp * density);
-		    frm.setPadding(0,0,0,paddingPixel);
-	    	}
+                kbd.setVisibility(View.VISIBLE);
+		frm.setPadding(0,0,0,kbd.getHeight());
 	    return;
 	}
     }
