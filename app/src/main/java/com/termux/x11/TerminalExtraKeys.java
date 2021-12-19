@@ -33,6 +33,8 @@ public class TerminalExtraKeys implements ExtraKeysView.IExtraKeysView {
     private final View.OnKeyListener mEventListener;
     private final MainActivity act;
 
+    private int metaAltState = 0;
+
     public TerminalExtraKeys(@NonNull View.OnKeyListener eventlistener, MainActivity mact) {
         mEventListener = eventlistener;
 	act = mact;
@@ -76,7 +78,6 @@ public class TerminalExtraKeys implements ExtraKeysView.IExtraKeysView {
             Integer keyCode = PRIMARY_KEY_CODES_FOR_STRINGS.get(key);
             if (keyCode == null) return;
             int metaState = 0;
-	    int metaAltState = 0;
 
             if (ctrlDown) {
 		metaState |= KeyEvent.META_CTRL_ON | KeyEvent.META_CTRL_LEFT_ON;
@@ -96,16 +97,9 @@ public class TerminalExtraKeys implements ExtraKeysView.IExtraKeysView {
 		metaState |= KeyEvent.META_FUNCTION_ON;
 	    }
 
-	    if (metaAltState != 0) {
-		mEventListener.onKey(act.getlorieView(), keyCode, new KeyEvent(metaAltState, keyCode));
-	    }
 
 	    mEventListener.onKey(act.getlorieView(), keyCode, new KeyEvent(0, 0, KeyEvent.ACTION_DOWN, keyCode, 0, metaState));
 	    mEventListener.onKey(act.getlorieView(), keyCode, new KeyEvent(0, 0, KeyEvent.ACTION_UP, keyCode, 0, metaState));
-
-	    if (metaAltState != 0) {
-		mEventListener.onKey(act.getlorieView(), keyCode, new KeyEvent(metaAltState, keyCode));
-	    }
 
         } else {
             // not a control char
@@ -115,8 +109,18 @@ public class TerminalExtraKeys implements ExtraKeysView.IExtraKeysView {
 		    KeyEvent[] events = mVirtualKeyboardKeyCharacterMap.getEvents(ch);
                     if (events != null) {
                         for (KeyEvent event : events) {
+
+			    if (metaAltState != 0) {
+			    	mEventListener.onKey(act.getlorieView(), keyCode, new KeyEvent(metaAltState, keyCode));
+	    		    }
+
 			    Integer keyCode = event.getKeyCode();
 			    mEventListener.onKey(act.getlorieView(), keyCode, new KeyEvent(KeyEvent.ACTION_UP, keyCode));
+
+	    		    if (metaAltState != 0) {
+				mEventListener.onKey(act.getlorieView(), keyCode, new KeyEvent(metaAltState, keyCode));
+				metaAltState = 0;
+	    		    }
 			}
 		    }
             });

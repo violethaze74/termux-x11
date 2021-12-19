@@ -1,6 +1,7 @@
 package com.termux.x11;
 
 import android.content.Context;
+import android.net.Uri;
 
 import com.termux.shared.terminal.io.extrakeys.ExtraKeysConstants;
 import com.termux.shared.terminal.io.extrakeys.ExtraKeysConstants.EXTRA_KEY_DISPLAY_MAPS;
@@ -8,12 +9,17 @@ import com.termux.shared.terminal.io.extrakeys.ExtraKeysInfo;
 import com.termux.shared.logger.Logger;
 import com.termux.shared.settings.properties.TermuxPropertyConstants;
 import com.termux.shared.settings.properties.TermuxSharedProperties;
+import com.termux.shared.termux.TermuxConstants;
 
 import org.json.JSONException;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.io.File;
+import java.io.InputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
 
 import androidx.annotation.NonNull;
 
@@ -36,7 +42,7 @@ public class TermuxAppSharedProperties extends TermuxSharedProperties {
     	return new TermuxAppSharedProperties(context, propertiesFile);
     }
 
-    private void runTermuxContentProviderReadCommand(Context context, Uri inputUri, File outFile) {
+    private static void runTermuxContentProviderReadCommand(Context context, Uri inputUri, File outFile) {
     	InputStream inputStream = null;
     	FileOutputStream fileOutputStream = null;
 
