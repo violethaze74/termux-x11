@@ -24,9 +24,46 @@ public class TermuxAppSharedProperties extends TermuxSharedProperties {
     private static final String LOG_TAG = "TermuxAppSharedProperties";
     public static final String TERMUX_X11_APP_NAME = "Termux:X11";
 
-    public TermuxAppSharedProperties(@NonNull Context context) {
-        super(context, TERMUX_X11_APP_NAME, TermuxPropertyConstants.getTermuxPropertiesFile(),
-		TermuxPropertyConstants.TERMUX_PROPERTIES_LIST, new SharedPropertiesParserClient());
+    private TermuxAppSharedProperties(@NonNull Context context, File propertiesFile) {
+    	super(context, TERMUX_X11_APP_NAME, propertiesFile,
+    	TermuxPropertyConstants.TERMUX_PROPERTIES_LIST, new SharedPropertiesParserClient());
+    }
+
+    public static TermuxAppSharedProperties build(Context context) {
+    	Uri propertiesFileUri = Uri.parse("content://" + TermuxConstants.TERMUX_FILE_SHARE_URI_AUTHORITY + TermuxConstants.TERMUX_PROPERTIES_PRIMARY_FILE_PATH);
+    	File propertiesFile = new File(context.getFilesDir(), "termux.properties");
+    	runTermuxContentProviderReadCommand(context, propertiesFileUri, propertiesFile);
+    	return new TermuxAppSharedProperties(context, propertiesFile);
+    }
+
+    private void runTermuxContentProviderReadCommand(Context context, Uri inputUri, File outFile) {
+    	InputStream inputStream = null;
+    	FileOutputStream fileOutputStream = null;
+
+    	try {
+             inputStream = context.getContentResolver().openInputStream(inputUri);
+
+            if (!outFile.exists())
+            	outFile.createNewFile();
+            fileOutputStream = new FileOutputStream(outFile);
+            byte[] buffer = new byte[4096];
+            int readBytes;
+            while ((readBytes = inputStream.read(buffer)) > 0) {
+            // Log.d(LOG_TAG, "data: " + new String(buffer, 0, readBytes, Charset.defaultCharset()));
+                fileOutputStream.write(buffer, 0, readBytes);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (inputStream != null)
+                    inputStream.close();
+                if (fileOutputStream != null)
+                    fileOutputStream.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     /**
