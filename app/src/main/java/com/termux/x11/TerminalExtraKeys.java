@@ -110,11 +110,12 @@ public class TerminalExtraKeys implements ExtraKeysView.IExtraKeysView {
                     if (events != null) {
                         for (KeyEvent event : events) {
 
+			    Integer keyCode = event.getKeyCode();
+
 			    if (metaAltState != 0) {
 			    	mEventListener.onKey(act.getlorieView(), keyCode, new KeyEvent(metaAltState, keyCode));
 	    		    }
 
-			    Integer keyCode = event.getKeyCode();
 			    mEventListener.onKey(act.getlorieView(), keyCode, new KeyEvent(KeyEvent.ACTION_UP, keyCode));
 
 	    		    if (metaAltState != 0) {
